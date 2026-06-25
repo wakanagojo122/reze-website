@@ -26,3 +26,5 @@ export interface EditableContent {
   trailerDesc: string;
   trailerYoutubeUrl: string;
 }
+
+

@@ -2,7 +2,16 @@ import React, { useEffect, useState } from "react";
 import Lenis from "lenis";
 import { Sliders } from "lucide-react";
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import { db } from "./firebase";
+import { db, handleFirestoreError, OperationType } from "./firebase";
+
+// Import default images from assets
+import heroBgImg from "./assets/images/csm_hero_bg_1782359794782.jpg";
+import storefrontImg from "./assets/images/csm_storefront_1782359812329.jpg";
+import makimaImg from "./assets/images/csm_makima_1782359828151.jpg";
+import akiImg from "./assets/images/csm_aki_1782359842976.jpg";
+import kobeniImg from "./assets/images/csm_kobeni_1782359858830.jpg";
+import makimaDenjiImg from "./assets/images/csm_makima_denji_1782359879946.jpg";
+import angelDevilImg from "./assets/images/csm_angel_devil_1782359897749.jpg";
 
 // Import Custom Modular Components
 import Header from "./components/Header";
@@ -18,13 +27,13 @@ import { EditableContent } from "./types";
 const LOCAL_STORAGE_KEY = "harshx_csm_editorial_v2";
 
 const DEFAULT_CONTENT: EditableContent = {
-  heroBg: "/your-image-here.jpg",
-  storefront: "/your-image-here.jpg",
-  makima: "/your-image-here.jpg",
-  aki: "/your-image-here.jpg",
-  kobeni: "/your-image-here.jpg",
-  makimaDenji: "/your-image-here.jpg",
-  angelDevil: "/your-image-here.jpg",
+  heroBg: heroBgImg,
+  storefront: storefrontImg,
+  makima: makimaImg,
+  aki: akiImg,
+  kobeni: kobeniImg,
+  makimaDenji: makimaDenjiImg,
+  angelDevil: angelDevilImg,
   
   heroTitle: "Chainsaw\nMan Anime",
   heroDesc: "The anime version is scheduled to premiere on September 19, 2022, and the author also revealed that he is preparing to publish the second manga series this summer. Step into Fujimoto's visceral urban nightmare where demons feed on human fears and devil hunters pay the ultimate price.",
@@ -45,12 +54,23 @@ const DEFAULT_CONTENT: EditableContent = {
   trailerYoutubeUrl: "https://youtu.be/EPaoHkV0dYw?si=CJGXKkgzmR566bU0",
 };
 
+function sanitizeContent(data: Partial<EditableContent>): EditableContent {
+  const sanitized = { ...DEFAULT_CONTENT };
+  (Object.keys(DEFAULT_CONTENT) as Array<keyof EditableContent>).forEach((key) => {
+    const value = data[key];
+    if (value && value !== "/your-image-here.jpg" && value !== "your-image-here.jpg" && String(value).trim() !== "") {
+      sanitized[key] = value as any;
+    }
+  });
+  return sanitized;
+}
+
 export default function App() {
   const [content, setContent] = useState<EditableContent>(() => {
     try {
       const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
       if (saved) {
-        return { ...DEFAULT_CONTENT, ...JSON.parse(saved) };
+        return sanitizeContent(JSON.parse(saved));
       }
     } catch (e) {
       console.error("Failed to load saved editorial content", e);
@@ -86,11 +106,58 @@ export default function App() {
     const loadPublishedState = async () => {
       try {
         const docRef = doc(db, "editorials", "main");
-        const docSnap = await getDoc(docRef);
+        let docSnap;
+        try {
+          docSnap = await getDoc(docRef);
+        } catch (e) {
+          handleFirestoreError(e, OperationType.GET, "editorials/main");
+          return;
+        }
+        
+        let remoteTextData: Partial<EditableContent> = {};
         if (docSnap.exists()) {
-          const remoteData = docSnap.data() as EditableContent;
-          setContent(prev => ({ ...prev, ...remoteData }));
-          localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(remoteData));
+          remoteTextData = docSnap.data() as Partial<EditableContent>;
+        }
+
+        const IMAGE_KEYS = [
+          "heroBg",
+          "storefront",
+          "makima",
+          "aki",
+          "kobeni",
+          "makimaDenji",
+          "angelDevil"
+        ] as const;
+
+        const imagePromises = IMAGE_KEYS.map(async (key) => {
+          const imgRef = doc(db, "editorials", "main", "images", key);
+          try {
+            const imgSnap = await getDoc(imgRef);
+            if (imgSnap.exists()) {
+              return { key, url: imgSnap.data().url as string };
+            }
+          } catch (err) {
+            handleFirestoreError(err, OperationType.GET, `editorials/main/images/${key}`);
+          }
+          return null;
+        });
+
+        const images = await Promise.all(imagePromises);
+        const remoteImageData: Record<string, string> = {};
+        images.forEach((item) => {
+          if (item) {
+            remoteImageData[item.key] = item.url;
+          }
+        });
+
+        const mergedData = sanitizeContent({
+          ...remoteTextData,
+          ...remoteImageData
+        });
+
+        if (docSnap.exists() || Object.keys(remoteImageData).length > 0) {
+          setContent(mergedData);
+          localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(mergedData));
         }
       } catch (e) {
         console.error("Failed to fetch published state from Firestore:", e);
@@ -108,8 +175,46 @@ export default function App() {
     }
 
     try {
+      const IMAGE_KEYS = [
+        "heroBg",
+        "storefront",
+        "makima",
+        "aki",
+        "kobeni",
+        "makimaDenji",
+        "angelDevil"
+      ] as const;
+
+      const textData: Record<string, string> = {};
+      const imageData: Record<string, string> = {};
+
+      Object.entries(newContent).forEach(([key, value]) => {
+        if (IMAGE_KEYS.includes(key as any)) {
+          imageData[key] = value;
+        } else {
+          textData[key] = value;
+        }
+      });
+
+      // Save texts to main document
       const docRef = doc(db, "editorials", "main");
-      await setDoc(docRef, newContent);
+      try {
+        await setDoc(docRef, textData);
+      } catch (e) {
+        handleFirestoreError(e, OperationType.WRITE, "editorials/main");
+      }
+
+      // Save each image separately under main document
+      const imagePromises = Object.entries(imageData).map(async ([key, url]) => {
+        const imgRef = doc(db, "editorials", "main", "images", key);
+        try {
+          await setDoc(imgRef, { url });
+        } catch (e) {
+          handleFirestoreError(e, OperationType.WRITE, `editorials/main/images/${key}`);
+        }
+      });
+
+      await Promise.all(imagePromises);
       return true;
     } catch (e) {
       console.error("Failed to save content to Firestore", e);
@@ -126,8 +231,44 @@ export default function App() {
     }
 
     try {
+      const IMAGE_KEYS = [
+        "heroBg",
+        "storefront",
+        "makima",
+        "aki",
+        "kobeni",
+        "makimaDenji",
+        "angelDevil"
+      ] as const;
+
+      const textData: Record<string, string> = {};
+      const imageData: Record<string, string> = {};
+
+      Object.entries(DEFAULT_CONTENT).forEach(([key, value]) => {
+        if (IMAGE_KEYS.includes(key as any)) {
+          imageData[key] = value;
+        } else {
+          textData[key] = value;
+        }
+      });
+
       const docRef = doc(db, "editorials", "main");
-      await setDoc(docRef, DEFAULT_CONTENT);
+      try {
+        await setDoc(docRef, textData);
+      } catch (e) {
+        handleFirestoreError(e, OperationType.WRITE, "editorials/main");
+      }
+
+      const imagePromises = Object.entries(imageData).map(async ([key, url]) => {
+        const imgRef = doc(db, "editorials", "main", "images", key);
+        try {
+          await setDoc(imgRef, { url });
+        } catch (e) {
+          handleFirestoreError(e, OperationType.WRITE, `editorials/main/images/${key}`);
+        }
+      });
+
+      await Promise.all(imagePromises);
     } catch (e) {
       console.error("Failed to reset Firestore content", e);
     }

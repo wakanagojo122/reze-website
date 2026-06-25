@@ -24,38 +24,54 @@ export default function CharacterGallery({ akiUrl, makimaUrl, angelDevilUrl }: C
         </div>
 
         {/* 3-Column Grid of 3 vertical portrait cards flush at the bottom */}
-        <div className="grid grid-cols-1 md:grid-cols-3 w-full border-t border-neutral-200 max-w-7xl mx-auto">
+        <motion.div 
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={{
+            hidden: { opacity: 0 },
+            visible: {
+              opacity: 1,
+              transition: {
+                staggerChildren: 0.15
+              }
+            }
+          }}
+          className="grid grid-cols-1 md:grid-cols-3 w-full border-t border-neutral-200 max-w-7xl mx-auto"
+        >
           
           {/* Card 1: Aki Hayakawa */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="group relative h-[480px] sm:h-[550px] overflow-hidden bg-white border-r border-neutral-200 flex flex-col justify-end"
+            variants={{
+              hidden: { opacity: 0, y: 40 },
+              visible: { opacity: 1, y: 0, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } }
+            }}
+            className="group relative h-[480px] sm:h-[550px] overflow-hidden bg-zinc-950 border-r border-neutral-200 flex flex-col justify-end cursor-pointer"
           >
-            {/* Portrait Image */}
-            <img
+            {/* Portrait Image with Motion */}
+            <motion.img
               src={akiUrl || "/your-image-here.jpg"}
               alt="Aki Hayakawa"
-              className="absolute inset-0 w-full h-full object-cover filter saturate-75 brightness-95 group-hover:scale-102 transition-transform duration-700"
+              whileHover={{ scale: 1.05, filter: "saturate(0.9) brightness(0.9)" }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              className="absolute inset-0 w-full h-full object-cover filter saturate-75 brightness-95"
               referrerPolicy="no-referrer"
             />
             
             {/* Overlay Gradient */}
-            <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/90 via-neutral-950/25 to-transparent pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/95 via-neutral-950/40 to-transparent pointer-events-none" />
 
             {/* Signature / Dossier info */}
-            <div className="absolute top-6 left-6 font-mono text-[8px] text-neutral-500 tracking-widest uppercase font-bold bg-white/80 px-2 py-0.5 rounded shadow-sm">
+            <div className="absolute top-6 left-6 font-mono text-[8px] text-neutral-500 tracking-widest uppercase font-bold bg-white/80 px-2 py-0.5 rounded shadow-sm z-10 transition-colors group-hover:bg-red-600 group-hover:text-white">
               DOSSIER_003
             </div>
             
             {/* Bottom Info overlay */}
-            <div className="relative z-10 p-8 flex flex-col justify-end text-white">
+            <div className="relative z-10 p-8 flex flex-col justify-end text-white transition-transform duration-500 group-hover:-translate-y-1">
               <h3 className="font-display text-xl font-black tracking-widest uppercase mb-1">
                 Aki Hayakawa
               </h3>
-              <div className="h-[1px] w-8 bg-red-600 mb-3" />
+              <div className="h-[1px] w-8 bg-red-600 mb-3 transition-all duration-500 group-hover:w-20" />
               <div className="flex justify-between items-end">
                 <span className="font-sans text-[11px] text-neutral-300 font-light italic leading-relaxed">
                   "I want the Gun Devil dead."
@@ -69,34 +85,36 @@ export default function CharacterGallery({ akiUrl, makimaUrl, angelDevilUrl }: C
 
           {/* Card 2: Makima */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.1 }}
-            className="group relative h-[480px] sm:h-[550px] overflow-hidden bg-white border-r border-neutral-200 flex flex-col justify-end"
+            variants={{
+              hidden: { opacity: 0, y: 40 },
+              visible: { opacity: 1, y: 0, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } }
+            }}
+            className="group relative h-[480px] sm:h-[550px] overflow-hidden bg-zinc-950 border-r border-neutral-200 flex flex-col justify-end cursor-pointer"
           >
-            {/* Portrait Image */}
-            <img
+            {/* Portrait Image with Motion */}
+            <motion.img
               src={makimaUrl || "/your-image-here.jpg"}
               alt="Makima looking down"
-              className="absolute inset-0 w-full h-full object-cover filter saturate-75 brightness-95 group-hover:scale-102 transition-transform duration-700"
+              whileHover={{ scale: 1.05, filter: "saturate(0.9) brightness(0.9)" }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              className="absolute inset-0 w-full h-full object-cover filter saturate-75 brightness-95"
               referrerPolicy="no-referrer"
             />
             
             {/* Overlay Gradient */}
-            <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/90 via-neutral-950/25 to-transparent pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/95 via-neutral-950/40 to-transparent pointer-events-none" />
 
             {/* Dossier info */}
-            <div className="absolute top-6 left-6 font-mono text-[8px] text-red-600 tracking-widest uppercase font-bold bg-white/80 px-2 py-0.5 rounded shadow-sm">
+            <div className="absolute top-6 left-6 font-mono text-[8px] text-red-600 tracking-widest uppercase font-bold bg-white/80 px-2 py-0.5 rounded shadow-sm z-10 transition-colors group-hover:bg-red-600 group-hover:text-white">
               DOSSIER_001
             </div>
 
             {/* Bottom Info overlay */}
-            <div className="relative z-10 p-8 flex flex-col justify-end text-white">
+            <div className="relative z-10 p-8 flex flex-col justify-end text-white transition-transform duration-500 group-hover:-translate-y-1">
               <h3 className="font-display text-xl font-black tracking-widest uppercase mb-1">
                 Makima
               </h3>
-              <div className="h-[1px] w-8 bg-red-600 mb-3" />
+              <div className="h-[1px] w-8 bg-red-600 mb-3 transition-all duration-500 group-hover:w-20" />
               
               <p className="font-sans text-[11px] text-neutral-300 leading-relaxed font-light">
                 Beautiful, yet deeply terrifying. A master of absolute control over humanity.
@@ -106,34 +124,36 @@ export default function CharacterGallery({ akiUrl, makimaUrl, angelDevilUrl }: C
 
           {/* Card 3: Angel Devil */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="group relative h-[480px] sm:h-[550px] overflow-hidden bg-white flex flex-col justify-end"
+            variants={{
+              hidden: { opacity: 0, y: 40 },
+              visible: { opacity: 1, y: 0, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } }
+            }}
+            className="group relative h-[480px] sm:h-[550px] overflow-hidden bg-zinc-950 flex flex-col justify-end cursor-pointer"
           >
-            {/* Portrait Image */}
-            <img
+            {/* Portrait Image with Motion */}
+            <motion.img
               src={angelDevilUrl || "/your-image-here.jpg"}
               alt="Angel Devil looking up"
-              className="absolute inset-0 w-full h-full object-cover filter saturate-75 brightness-95 group-hover:scale-102 transition-transform duration-700"
+              whileHover={{ scale: 1.05, filter: "saturate(0.9) brightness(0.9)" }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              className="absolute inset-0 w-full h-full object-cover filter saturate-75 brightness-95"
               referrerPolicy="no-referrer"
             />
 
             {/* Overlay Gradient */}
-            <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/90 via-neutral-950/25 to-transparent pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/95 via-neutral-950/40 to-transparent pointer-events-none" />
 
             {/* Dossier info */}
-            <div className="absolute top-6 left-6 font-mono text-[8px] text-neutral-500 tracking-widest uppercase font-bold bg-white/80 px-2 py-0.5 rounded shadow-sm">
+            <div className="absolute top-6 left-6 font-mono text-[8px] text-neutral-500 tracking-widest uppercase font-bold bg-white/80 px-2 py-0.5 rounded shadow-sm z-10 transition-colors group-hover:bg-red-600 group-hover:text-white">
               DOSSIER_008
             </div>
 
             {/* Bottom Info overlay */}
-            <div className="relative z-10 p-8 flex flex-col justify-end text-white">
+            <div className="relative z-10 p-8 flex flex-col justify-end text-white transition-transform duration-500 group-hover:-translate-y-1">
               <h3 className="font-display text-xl font-black tracking-widest uppercase mb-1">
                 Angel Devil
               </h3>
-              <div className="h-[1px] w-8 bg-red-600 mb-3" />
+              <div className="h-[1px] w-8 bg-red-600 mb-3 transition-all duration-500 group-hover:w-20" />
               
               <p className="font-sans text-[11px] text-neutral-300 leading-relaxed font-light">
                 Possessing the face of an angel, carrying the sheer tragedy of life-leeching touch. Melancholic and completely indifferent.
@@ -141,7 +161,7 @@ export default function CharacterGallery({ akiUrl, makimaUrl, angelDevilUrl }: C
             </div>
           </motion.div>
 
-        </div>
+        </motion.div>
 
         {/* Footer Credit & Copyright Info */}
         <div className="bg-neutral-100 py-16 border-t border-neutral-200 text-center px-4 sm:px-8 space-y-4">

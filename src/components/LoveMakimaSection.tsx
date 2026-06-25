@@ -75,22 +75,48 @@ export default function LoveMakimaSection({
         {/* Below centerpiece: 3 small polaroid-style images */}
         <div className="mt-12 grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
           
-          {/* Polaroid Cards Cluster (Columns 1-7) */}
-          <div className="md:col-span-7 flex flex-wrap gap-6 justify-center md:justify-start items-center">
+          {/* Polaroid Cards Cluster with layout stagger */}
+          <motion.div 
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+            variants={{
+              hidden: { opacity: 0 },
+              visible: {
+                opacity: 1,
+                transition: {
+                  staggerChildren: 0.15
+                }
+              }
+            }}
+            className="md:col-span-7 flex flex-wrap gap-6 justify-center md:justify-start items-center"
+          >
             
             {/* Polaroid 1: Girl looking back */}
             <motion.div
-              initial={{ opacity: 0, rotate: -3 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              whileHover={{ rotate: 0, scale: 1.03 }}
-              className="bg-white p-2.5 pb-6 shadow-md rounded border border-neutral-200 w-[140px]"
+              variants={{
+                hidden: { opacity: 0, y: 30, rotate: -8 },
+                visible: { 
+                  opacity: 1, 
+                  y: 0, 
+                  rotate: -3, 
+                  transition: { type: "spring", stiffness: 100, damping: 15 } 
+                }
+              }}
+              whileHover={{ 
+                rotate: -1, 
+                scale: 1.08, 
+                y: -12, 
+                boxShadow: "0 25px 30px -10px rgba(0,0,0,0.22)" 
+              }}
+              transition={{ type: "spring", stiffness: 350, damping: 18 }}
+              className="bg-white p-2.5 pb-6 shadow-md rounded border border-neutral-200 w-[140px] cursor-pointer transition-shadow"
             >
-              <div className="aspect-square overflow-hidden bg-neutral-100 mb-2 rounded-sm">
+              <div className="aspect-square overflow-hidden bg-neutral-100 mb-2 rounded-sm relative group/polaroid">
                 <img
                   src={girlLookingBackUrl || "/your-image-here.jpg"}
                   alt="Looking back reference"
-                  className="w-full h-full object-cover filter contrast-125"
+                  className="w-full h-full object-cover filter contrast-125 transition-transform duration-500 group-hover/polaroid:scale-105"
                   referrerPolicy="no-referrer"
                 />
               </div>
@@ -101,17 +127,29 @@ export default function LoveMakimaSection({
 
             {/* Polaroid 2: Boy looking forward */}
             <motion.div
-              initial={{ opacity: 0, rotate: 3 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              whileHover={{ rotate: 0, scale: 1.03 }}
-              className="bg-white p-2.5 pb-6 shadow-md rounded border border-neutral-200 w-[140px]"
+              variants={{
+                hidden: { opacity: 0, y: 35, rotate: 8 },
+                visible: { 
+                  opacity: 1, 
+                  y: 0, 
+                  rotate: 3, 
+                  transition: { type: "spring", stiffness: 100, damping: 15 } 
+                }
+              }}
+              whileHover={{ 
+                rotate: 0, 
+                scale: 1.08, 
+                y: -12, 
+                boxShadow: "0 25px 30px -10px rgba(0,0,0,0.22)" 
+              }}
+              transition={{ type: "spring", stiffness: 350, damping: 18 }}
+              className="bg-white p-2.5 pb-6 shadow-md rounded border border-neutral-200 w-[140px] cursor-pointer transition-shadow"
             >
-              <div className="aspect-square overflow-hidden bg-neutral-100 mb-2 rounded-sm">
+              <div className="aspect-square overflow-hidden bg-neutral-100 mb-2 rounded-sm relative group/polaroid">
                 <img
                   src={boyLookingForwardUrl || "/your-image-here.jpg"}
                   alt="Looking forward reference"
-                  className="w-full h-full object-cover filter contrast-110"
+                  className="w-full h-full object-cover filter contrast-110 transition-transform duration-500 group-hover/polaroid:scale-105"
                   referrerPolicy="no-referrer"
                 />
               </div>
@@ -122,17 +160,29 @@ export default function LoveMakimaSection({
 
             {/* Polaroid 3: Small Art Panel */}
             <motion.div
-              initial={{ opacity: 0, rotate: -1 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              whileHover={{ rotate: 0, scale: 1.03 }}
-              className="bg-white p-2.5 pb-6 shadow-md rounded border border-neutral-200 w-[140px]"
+              variants={{
+                hidden: { opacity: 0, y: 40, rotate: -4 },
+                visible: { 
+                  opacity: 1, 
+                  y: 0, 
+                  rotate: -1, 
+                  transition: { type: "spring", stiffness: 100, damping: 15 } 
+                }
+              }}
+              whileHover={{ 
+                rotate: 2, 
+                scale: 1.08, 
+                y: -12, 
+                boxShadow: "0 25px 30px -10px rgba(0,0,0,0.22)" 
+              }}
+              transition={{ type: "spring", stiffness: 350, damping: 18 }}
+              className="bg-white p-2.5 pb-6 shadow-md rounded border border-neutral-200 w-[140px] cursor-pointer transition-shadow"
             >
-              <div className="aspect-square overflow-hidden bg-neutral-100 mb-2 rounded-sm">
+              <div className="aspect-square overflow-hidden bg-neutral-100 mb-2 rounded-sm relative group/polaroid">
                 <img
                   src={smallArtPanelUrl || "/your-image-here.jpg"}
                   alt="Visual detail panel"
-                  className="w-full h-full object-cover filter saturate-50"
+                  className="w-full h-full object-cover filter saturate-50 transition-transform duration-500 group-hover/polaroid:scale-105"
                   referrerPolicy="no-referrer"
                 />
               </div>
@@ -141,7 +191,7 @@ export default function LoveMakimaSection({
               </p>
             </motion.div>
 
-          </div>
+          </motion.div>
 
           {/* Text paragraph (Columns 8-12) */}
           <div className="md:col-span-5 flex flex-col justify-center space-y-6">

@@ -1,59 +1,11 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // Global Safety Net
-    match /{document=**} {
-      allow read, write: if false;
-    }
-
-    // Helper functions
-    function isValidId(id) {
-      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
-    }
-
-    function incoming() {
-      return request.resource.data;
-    }
-
-    // Validation helper for editorial documents
-    function isValidEditorial(data) {
-      return data.keys().hasAll([
-        'heroBg', 'storefront', 'makima', 'aki', 'kobeni', 'makimaDenji', 'angelDevil',
-        'heroTitle', 'heroDesc', 'section1Title', 'makimaCardTitle', 'makimaCardDesc',
-        'akiCardTitle', 'akiCardDesc', 'kobeniCardTitle', 'kobeniCardDesc', 'section2Title',
-        'section2Percent', 'section2Quote', 'trailerTitle', 'trailerSub', 'trailerDesc', 'trailerYoutubeUrl'
-      ]) &&
-      data.keys().size() == 23 &&
-      data.heroBg is string && data.heroBg.size() <= 1600000 &&
-      data.storefront is string && data.storefront.size() <= 1600000 &&
-      data.makima is string && data.makima.size() <= 1600000 &&
-      data.aki is string && data.aki.size() <= 1600000 &&
-      data.kobeni is string && data.kobeni.size() <= 1600000 &&
-      data.makimaDenji is string && data.makimaDenji.size() <= 1600000 &&
-      data.angelDevil is string && data.angelDevil.size() <= 1600000 &&
-      data.heroTitle is string && data.heroTitle.size() <= 5000 &&
-      data.heroDesc is string && data.heroDesc.size() <= 5000 &&
-      data.section1Title is string && data.section1Title.size() <= 5000 &&
-      data.makimaCardTitle is string && data.makimaCardTitle.size() <= 5000 &&
-      data.makimaCardDesc is string && data.makimaCardDesc.size() <= 5000 &&
-      data.akiCardTitle is string && data.akiCardTitle.size() <= 5000 &&
-      data.akiCardDesc is string && data.akiCardDesc.size() <= 5000 &&
-      data.kobeniCardTitle is string && data.kobeniCardTitle.size() <= 5000 &&
-      data.kobeniCardDesc is string && data.kobeniCardDesc.size() <= 5000 &&
-      data.section2Title is string && data.section2Title.size() <= 5000 &&
-      data.section2Percent is string && data.section2Percent.size() <= 5000 &&
-      data.section2Quote is string && data.section2Quote.size() <= 5000 &&
-      data.trailerTitle is string && data.trailerTitle.size() <= 5000 &&
-      data.trailerSub is string && data.trailerSub.size() <= 5000 &&
-      data.trailerDesc is string && data.trailerDesc.size() <= 5000 &&
-      data.trailerYoutubeUrl is string && data.trailerYoutubeUrl.size() <= 5000;
-    }
-
     match /editorials/{document} {
-      allow read: if true;
-      allow create, update: if isValidId(document) && isValidEditorial(incoming());
-      allow delete: if false;
+      allow read, write: if true;
+    }
+    match /editorials/{document}/images/{imageDoc} {
+      allow read, write: if true;
     }
   }
 }
