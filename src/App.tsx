@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Lenis from "lenis";
 import { Sliders } from "lucide-react";
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { db } from "./firebase";
 
 // Import Custom Modular Components
 import Header from "./components/Header";
@@ -79,23 +81,55 @@ export default function App() {
     };
   }, []);
 
-  const handleSave = (newContent: EditableContent): boolean => {
+  // Fetch published state from Firestore asynchronously on mount
+  useEffect(() => {
+    const loadPublishedState = async () => {
+      try {
+        const docRef = doc(db, "editorials", "main");
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const remoteData = docSnap.data() as EditableContent;
+          setContent(prev => ({ ...prev, ...remoteData }));
+          localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(remoteData));
+        }
+      } catch (e) {
+        console.error("Failed to fetch published state from Firestore:", e);
+      }
+    };
+    loadPublishedState();
+  }, []);
+
+  const handleSave = async (newContent: EditableContent): Promise<boolean> => {
     setContent(newContent);
     try {
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newContent));
+    } catch (e) {
+      console.warn("Failed to save content to local storage", e);
+    }
+
+    try {
+      const docRef = doc(db, "editorials", "main");
+      await setDoc(docRef, newContent);
       return true;
     } catch (e) {
-      console.error("Failed to save content to local storage", e);
+      console.error("Failed to save content to Firestore", e);
       return false;
     }
   };
 
-  const handleReset = () => {
+  const handleReset = async () => {
     setContent(DEFAULT_CONTENT);
     try {
       localStorage.removeItem(LOCAL_STORAGE_KEY);
     } catch (e) {
-      console.error("Failed to clear local storage", e);
+      console.warn("Failed to clear local storage", e);
+    }
+
+    try {
+      const docRef = doc(db, "editorials", "main");
+      await setDoc(docRef, DEFAULT_CONTENT);
+    } catch (e) {
+      console.error("Failed to reset Firestore content", e);
     }
   };
 

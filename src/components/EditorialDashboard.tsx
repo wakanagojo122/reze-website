@@ -160,7 +160,7 @@ interface EditorialDashboardProps {
   isOpen: boolean;
   onClose: () => void;
   content: EditableContent;
-  onSave: (newContent: EditableContent) => boolean;
+  onSave: (newContent: EditableContent) => Promise<boolean> | boolean;
   onReset: () => void;
 }
 
@@ -174,6 +174,7 @@ export default function EditorialDashboard({
   const [activeTab, setActiveTab] = useState<"images" | "texts" | "videos">("images");
   const [formData, setFormData] = useState<EditableContent>({ ...content });
   const [isSaved, setIsSaved] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
   const formRef = React.useRef<HTMLFormElement>(null);
@@ -210,16 +211,26 @@ export default function EditorialDashboard({
     setSaveError(null);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const success = onSave(formData);
-    if (success) {
-      setIsSaved(true);
-      setSaveError(null);
-      setTimeout(() => setIsSaved(false), 3000);
-    } else {
-      setSaveError("LocalStorage quota exceeded! Some images are too large to save.");
+    setIsSaving(true);
+    setSaveError(null);
+    try {
+      const success = await onSave(formData);
+      if (success) {
+        setIsSaved(true);
+        setSaveError(null);
+        setTimeout(() => setIsSaved(false), 3000);
+      } else {
+        setSaveError("Failed to save. If you uploaded massive files, they might exceed limits!");
+        setTimeout(() => setSaveError(null), 6000);
+      }
+    } catch (err: any) {
+      console.error(err);
+      setSaveError(err.message || "An unexpected error occurred while saving.");
       setTimeout(() => setSaveError(null), 6000);
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -657,10 +668,15 @@ export default function EditorialDashboard({
                 <button
                   onClick={handleSubmit}
                   type="submit"
-                  className="px-8 py-2.5 bg-[#CC0000] hover:bg-red-700 text-white rounded font-mono text-xs tracking-wider uppercase flex items-center space-x-2 shadow-[0_4px_20px_rgba(204,0,0,0.3)] hover:shadow-[0_4px_25px_rgba(204,0,0,0.5)] transition-all duration-300 font-bold"
+                  disabled={isSaving}
+                  className={`px-8 py-2.5 rounded font-mono text-xs tracking-wider uppercase flex items-center space-x-2 transition-all duration-300 font-bold ${
+                    isSaving
+                      ? "bg-zinc-800 text-white/40 cursor-not-allowed border border-white/5"
+                      : "bg-[#CC0000] hover:bg-red-700 text-white shadow-[0_4px_20px_rgba(204,0,0,0.3)] hover:shadow-[0_4px_25px_rgba(204,0,0,0.5)]"
+                  }`}
                 >
-                  <Save className="w-4 h-4" />
-                  <span>PUBLISH STATE</span>
+                  <Save className={`w-4 h-4 ${isSaving ? "animate-spin" : ""}`} />
+                  <span>{isSaving ? "PUBLISHING..." : "PUBLISH STATE"}</span>
                 </button>
               </div>
             </div>

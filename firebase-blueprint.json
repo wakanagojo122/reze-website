@@ -1,0 +1,65 @@
+{
+  "entities": {
+    "Editorial": {
+      "title": "Editorial Content",
+      "description": "Customizable homepage editorial content containing images, headlines, copy, and videos.",
+      "type": "object",
+      "properties": {
+        "heroBg": { "type": "string", "description": "Base64 or image URL of hero background" },
+        "storefront": { "type": "string", "description": "Base64 or image URL of storefront image" },
+        "makima": { "type": "string", "description": "Base64 or image URL of Makima profile" },
+        "aki": { "type": "string", "description": "Base64 or image URL of Aki profile" },
+        "kobeni": { "type": "string", "description": "Base64 or image URL of Kobeni profile" },
+        "makimaDenji": { "type": "string", "description": "Base64 or image URL of Makima and Denji image" },
+        "angelDevil": { "type": "string", "description": "Base64 or image URL of Angel Devil image" },
+        "heroTitle": { "type": "string", "description": "Hero title text" },
+        "heroDesc": { "type": "string", "description": "Hero description text" },
+        "section1Title": { "type": "string", "description": "Section 1 header" },
+        "makimaCardTitle": { "type": "string", "description": "Makima card title" },
+        "makimaCardDesc": { "type": "string", "description": "Makima card description" },
+        "akiCardTitle": { "type": "string", "description": "Aki card title" },
+        "akiCardDesc": { "type": "string", "description": "Aki card description" },
+        "kobeniCardTitle": { "type": "string", "description": "Kobeni card title" },
+        "kobeniCardDesc": { "type": "string", "description": "Kobeni card description" },
+        "section2Title": { "type": "string", "description": "Section 2 header" },
+        "section2Percent": { "type": "string", "description": "Section 2 stat percentage" },
+        "section2Quote": { "type": "string", "description": "Section 2 blockquote text" },
+        "trailerTitle": { "type": "string", "description": "Trailer header text" },
+        "trailerSub": { "type": "string", "description": "Trailer sub-headline text" },
+        "trailerDesc": { "type": "string", "description": "Trailer description copy" },
+        "trailerYoutubeUrl": { "type": "string", "description": "YouTube video link or embed URL" }
+      },
+      "required": [
+        "heroBg",
+        "storefront",
+        "makima",
+        "aki",
+        "kobeni",
+        "makimaDenji",
+        "angelDevil",
+        "heroTitle",
+        "heroDesc",
+        "section1Title",
+        "makimaCardTitle",
+        "makimaCardDesc",
+        "akiCardTitle",
+        "akiCardDesc",
+        "kobeniCardTitle",
+        "kobeniCardDesc",
+        "section2Title",
+        "section2Percent",
+        "section2Quote",
+        "trailerTitle",
+        "trailerSub",
+        "trailerDesc",
+        "trailerYoutubeUrl"
+      ]
+    }
+  },
+  "firestore": {
+    "editorials/{document}": {
+      "schema": "Editorial",
+      "description": "Editorial state collection storing the homepage content configurations."
+    }
+  }
+}
