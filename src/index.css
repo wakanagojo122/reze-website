@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@700;800;900&family=Caveat:wght@400;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-handwritten: "Caveat", cursive;
+}
+
+/* Custom scrollbar and sleek selections for clean light cream aesthetic */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f4f4f0;
+}
+::-webkit-scrollbar-thumb {
+  background: #d4d4cb;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #1a1a1a;
+}
+
+/* Studio Workspace custom scrollbar styling for high visibility and easy grab */
+.studio-scrollbar::-webkit-scrollbar {
+  width: 10px !important;
+  height: 10px !important;
+}
+.studio-scrollbar::-webkit-scrollbar-track {
+  background: #111113 !important; /* very dark gray */
+  border-radius: 5px;
+}
+.studio-scrollbar::-webkit-scrollbar-thumb {
+  background: #44444a !important; /* visible medium gray */
+  border: 2px solid #111113 !important;
+  border-radius: 5px;
+}
+.studio-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #dc2626 !important; /* Red hover for the Chainsaw Man theme */
+}
+
+selection {
+  background-color: #1a1a1a;
+  color: #f4f4f0;
+}
+::selection {
+  background-color: #1a1a1a;
+  color: #f4f4f0;
+}
